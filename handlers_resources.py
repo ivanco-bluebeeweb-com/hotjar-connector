@@ -19,7 +19,7 @@ async def list_events(params: ListEventParams, ctx) -> ActionResult:
             rid = str(r.get("id") or r.get("key") or r.get("uuid") or "unknown")
             rname = r.get("name") or r.get("title") or r.get("label") or rid
             items.append({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r})
-        return ActionResult.ok({"events": items, "total": len(items)}, summary=f"Found {len(items)} events.")
+        return ActionResult.success({"events": items, "total": len(items)}, summary=f"Found {len(items)} events.")
     except Exception as e:
         return ActionResult.error(f"Error listing events: {e}")
 
@@ -30,7 +30,7 @@ async def get_event(params: GetEventParams, ctx) -> ActionResult:
         r = await client.get_event(params.event_id)
         rid = str(r.get("id") or params.event_id)
         rname = r.get("name") or r.get("title") or rid
-        return ActionResult.ok({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved Event {rid}.")
+        return ActionResult.success({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved Event {rid}.")
     except Exception as e:
         return ActionResult.error(f"Error retrieving Event: {e}")
 
@@ -39,7 +39,7 @@ async def audit_event_health(params: ConnectionIdParams, ctx) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         items = await client.list_events(limit=50)
-        return ActionResult.ok({
+        return ActionResult.success({
             "healthy": True,
             "total_events": len(items),
             "details": {"sample_count": len(items)},
